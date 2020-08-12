@@ -22,3 +22,8 @@ In backup_data/folders.txt put an absolute path to a folder you want to backup. 
 The moveTo location is an optional path to a folder where you want to store the final backup. This is typically used to put the path of a USB stick in the backup_data/move_to.txt file. The program will ask if you want to move the final backup to this location.
 
 If moveTo is not set (when the move_to.txt file is empty), the final backup will be placed in your home folder.
+
+
+## Modifying backups.py
+
+Every method is documented and separated following, as close as possible, to the Single Responsibility Principle (SRP [WikiPedia](https://en.wikipedia.org/wiki/Single-responsibility_principle)) to allow you to easily modify the script.
