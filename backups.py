@@ -1,8 +1,11 @@
+#!/usr/bin/python3
+
 import shutil
 import os
 import re
 import sys
 import datetime
+import pathlib
 
 
 # Errors
@@ -22,6 +25,7 @@ class Backup:
     def __init__(self, backupFolderName):
         self.zippedFiles = []
         self.backupFolderName = backupFolderName
+        self.path = str(pathlib.Path(__file__).parent.absolute()) + "/"
 
     @property
     def backupFolder(self):
@@ -45,7 +49,7 @@ class Backup:
     @property
     def moveToLocation(self):
         '''The path in backup_data/move_to.txt'''
-        with open("backup_data/move_to.txt") as moveToLocationFile:
+        with open(self.path + "backup_data/move_to.txt") as moveToLocationFile:
             content = moveToLocationFile.read()
         
         return content.strip()
@@ -58,7 +62,7 @@ class Backup:
 
     def checkFileSystem(self):
         print("Starting backup...\n")
-        with open("backup_data/folders.txt") as locationsFile:
+        with open(self.path + "backup_data/folders.txt") as locationsFile:
             content = locationsFile.read()
         
         if content == "":
@@ -66,7 +70,7 @@ class Backup:
     
     def openBackupLocationsFile(self):
         '''Used in various properties to get the listed folders to backup.'''
-        with open("backup_data/folders.txt") as locationsFile:
+        with open(self.path + "backup_data/folders.txt") as locationsFile:
             content = locationsFile.readlines()
 
         return content
@@ -113,13 +117,15 @@ class Backup:
         if self.moveToLocation == "":
             confirm = "n"
         else:
-            confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
+            # confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
+            confirm = "y"
         
 
         if confirm == "y":
             shutil.move(self.homeFolder + self.backupFolderName + ".zip", self.moveToLocation)
             os.rename(self.moveToLocation + self.backupFolderName + ".zip", self.moveToLocation + self.date + self.backupFolderName + ".zip")
-        
+        else:
+            os.rename(self.homeFolder + self.backupFolderName + ".zip", self.homeFolder + self.date + self.backupFolderName + ".zip")
         print("\n\nBackup Completed!\n\n")
 
     def __call__(self):
