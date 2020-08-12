@@ -26,4 +26,4 @@ If moveTo is not set (when the move_to.txt file is empty), the final backup will
 
 ## Modifying backups.py
 
-Every method is documented and separated following, as close as possible, to the Single Responsibility Principle (SRP [WikiPedia](https://en.wikipedia.org/wiki/Single-responsibility_principle)) to allow you to easily modify the script.
+Every method is documented and separated following, as close as possible, to the Single Responsibility Principle (SRP [Wikipedia](https://en.wikipedia.org/wiki/Single-responsibility_principle)) to allow you to easily modify the script.

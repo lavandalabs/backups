@@ -25,6 +25,7 @@ class Backup:
 
     @property
     def backupFolder(self):
+        '''Path to the final backup folder'''
         return self.homeFolder + self.backupFolderName + "/"
 
     @property
@@ -53,8 +54,7 @@ class Backup:
     def date(self):
         '''The current date; used in self.moveZippedBackupFolder() if self.moveToLocation is not empty'''
         x = datetime.datetime.now()
-        x = str(x).split(" ")
-        return x[0]
+        return x.strftime("%Y-%m-%d@%I:%M:%S")
 
     def checkFileSystem(self):
         with open("backup_data/folders.txt") as locationsFile:
@@ -120,7 +120,7 @@ class Backup:
         
 
         if confirm == "y":
-            shutil.move(self.backupFolder + ".zip", self.moveToLocation)
+            shutil.move(self.homeFolder + self.backupFolderName + ".zip", self.moveToLocation)
             os.rename(self.moveToLocation + self.backupFolderName + ".zip", self.moveToLocation + self.date + "-" + self.backupFolderName + ".zip")
         
         print("\n\nBackup Completed!\n\n")
