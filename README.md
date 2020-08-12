@@ -1,6 +1,10 @@
 # Backups
 A simple command-line backups app
 
+## What it does
+
+It takes a list of specified folders and Zip's them. It then creates a backup folder, called by default "D6-Backup" and moves the Zipped folders to that main backup folder. It then proceeds to Zip the main backup folder, for easy transport. This is the final backup. If you have a path specified in backup_data/move_to.txt, the program will ask if you want to move the final, zipped backup file to that location. This is typically for sending the final backup file to a USB stick. If move_to is set, it will move the file there and rename it to the following format: YYYY-MM-DD-backupFolderName.zip, allowing you to easily compare from past backups.
+
 ### Running the app:
 
 1. Download as ZIP and move to a folder of your choice.
