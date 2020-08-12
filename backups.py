@@ -53,8 +53,8 @@ class Backup:
     @property
     def date(self):
         '''The current date; used in self.moveZippedBackupFolder() if self.moveToLocation is not empty'''
-        x = datetime.datetime.now()
-        return x.strftime("%Y-%m-%d@%I:%M:%S-")
+        now = datetime.datetime.now()
+        return now.strftime("%Y-%m-%d@%I:%M:%S-")
 
     def checkFileSystem(self):
         with open("backup_data/folders.txt") as locationsFile:
