@@ -22,10 +22,12 @@ class Backup:
         (list) zippedFiles:
             Automatically set; the list of folders that were zipped in self.zipLocations()
     '''
-    def __init__(self, backupFolderName):
+
+    def __init__(self, backupFolderName, customMoveToLocation=None):
         self.zippedFiles = []
         self.backupFolderName = backupFolderName
         self.path = str(pathlib.Path(__file__).parent.absolute()) + "/"
+        self.customMoveToLocation = customMoveToLocation
 
     @property
     def backupFolder(self):
@@ -51,6 +53,9 @@ class Backup:
         '''The path in backup_data/move_to.txt'''
         with open(self.path + "backup_data/move_to.txt") as moveToLocationFile:
             content = moveToLocationFile.read()
+        
+        if self.customMoveToLocation:
+            return self.customMoveToLocation
         
         return content.strip()
     
@@ -117,8 +122,7 @@ class Backup:
         if self.moveToLocation == "":
             confirm = "n"
         else:
-            # confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
-            confirm = "y"
+            confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
         
 
         if confirm == "y":
@@ -139,8 +143,13 @@ class Backup:
         self.moveZippedBackupFolder()
     
 
+def setCustomMoveToLocation():
+    '''If you want to customize the moveTo location, which
+    will override the prompt, return an absolute path here'''
+    pass
+
 
 if __name__ == '__main__':
-    bk = Backup("D6-Backup")
+    bk = Backup("D6-Backup", setCustomMoveToLocation())
     bk()
     print("\n")
