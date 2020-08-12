@@ -79,19 +79,7 @@ class Backup:
             content = locationsFile.readlines()
 
         return content
-
-    def zipLocations(self):
-        '''Zip all the folders specified in backup_data/folders.txt.'''
-        for location in self.backupLocations:
-            outputName = re.findall("/[A-Z]*[a-z]*/$", location)
-            print("Zipping {}...".format(location))
-            shutil.make_archive(self.homeFolder + outputName[0].replace("/", ""), 'zip', location)
-
-            zippedName = outputName[0].replace("/", "")
-            zippedName += ".zip"
-            self.zippedFiles.append(zippedName)
-
-        
+    
     def createBackupFolder(self):
         '''Create the backup folder in the user's home folder.'''
         try:
@@ -100,12 +88,12 @@ class Backup:
             print("The backup folder '{}' exists. Please delete it and re-run the program.".format(self.backupFolderName))
             sys.exit()
     
-    def moveLocationsToBackupFolder(self):
-        '''Move all the zipped folders to self.backupFolderName, the main backup folder.'''
-        for zippedFile in self.zippedFiles:
-            print("Moving {}...".format(zippedFile))
-            backupLocation = self.backupFolder
-            shutil.move(self.homeFolder + zippedFile, backupLocation)
+    def copyLocations(self):
+        for location in self.backupLocations:
+            outputName = re.findall("/[A-Z]*[a-z]*/$", location)
+            print("Copying {}...".format(location))
+            shutil.copytree(self.homeFolder + outputName[0].replace("/", ""), self.backupFolder + outputName[0].replace("/", ""))
+    
         
     def zipBackupFolder(self):
         '''Zip the backup folder for easy transport.'''
@@ -122,7 +110,10 @@ class Backup:
         if self.moveToLocation == "":
             confirm = "n"
         else:
-            confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
+            if not self.customMoveToLocation:
+                confirm = input("Would you like to move this Backup to '{}'? (y/n) ".format(self.moveToLocation))
+            else:
+                confirm = "y"
         
 
         if confirm == "y":
@@ -135,9 +126,10 @@ class Backup:
     def __call__(self):
         '''Run all methods'''
         self.checkFileSystem()
-        self.zipLocations()
+        # self.zipLocations()
         self.createBackupFolder()
-        self.moveLocationsToBackupFolder()
+        self.copyLocations()
+        # self.moveLocationsToBackupFolder()
         self.zipBackupFolder()
         self.removeUnzippedBackupFolder()
         self.moveZippedBackupFolder()
@@ -146,7 +138,10 @@ class Backup:
 def setCustomMoveToLocation():
     '''If you want to customize the moveTo location, which
     will override the prompt, return an absolute path here'''
-    pass
+    if os.path.exists("/media/titanium/Shark/"):
+        return "/media/titanium/Shark/"
+    else:
+        return "/home/titanium/Local-Backups/"
 
 
 if __name__ == '__main__':
