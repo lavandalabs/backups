@@ -9,7 +9,7 @@ import datetime
 class NoBackupLocationsSpecified(Exception):
     pass
 
-
+print("\n")
 
 class Backup:
     '''
@@ -57,6 +57,7 @@ class Backup:
         return now.strftime("%Y-%m-%d@%I:%M:%S-")
 
     def checkFileSystem(self):
+        print("Starting backup...\n")
         with open("backup_data/folders.txt") as locationsFile:
             content = locationsFile.read()
         
@@ -76,7 +77,6 @@ class Backup:
             outputName = re.findall("/[A-Z]*[a-z]*/$", location)
             print("Zipping {}...".format(location))
             shutil.make_archive(self.homeFolder + outputName[0].replace("/", ""), 'zip', location)
-            print("Zipped {}.".format(location))
 
             zippedName = outputName[0].replace("/", "")
             zippedName += ".zip"
@@ -97,19 +97,16 @@ class Backup:
             print("Moving {}...".format(zippedFile))
             backupLocation = self.backupFolder
             shutil.move(self.homeFolder + zippedFile, backupLocation)
-            print("Moved {} to {}...".format(zippedFile, backupLocation))
         
     def zipBackupFolder(self):
         '''Zip the backup folder for easy transport.'''
         print("Zipping {}...".format(self.backupFolderName))
         shutil.make_archive(self.backupFolder, "zip", self.backupFolder)
-        print("Zipped {}.".format(self.backupFolderName))
     
     def removeUnzippedBackupFolder(self):
         '''When zipping a folder, the original folder stays, so we remove the backup folder after it has been zipped.'''
         print("Removing unzipped backup folder...")
         shutil.rmtree(self.backupFolder)
-        print("Removed unzipped backup folder.")
     
     def moveZippedBackupFolder(self):
         '''If self.moveToLocation is not empty, move the folder to the specified location.'''
@@ -140,3 +137,4 @@ class Backup:
 if __name__ == '__main__':
     bk = Backup("D6-Backup")
     bk()
+    print("\n")
