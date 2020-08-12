@@ -14,11 +14,18 @@ class NoBackupLocationsSpecified(Exception):
 class Backup:
     '''
     @attrs:
+        (string) backupFolderName:
+            Name of the backup folder. Default 'D6-Backup'
         (list) zippedFiles:
             Automatically set; the list of folders that were zipped in self.zipLocations()
     '''
-    def __init__(self):
+    def __init__(self, backupFolderName):
         self.zippedFiles = []
+        self.backupFolderName = backupFolderName
+
+    @property
+    def backupFolder(self):
+        return self.homeFolder + self.backupFolderName + "/"
 
     @property
     def homeFolder(self):
@@ -48,17 +55,18 @@ class Backup:
         x = datetime.datetime.now()
         x = str(x).split(" ")
         return x[0]
+
+    def checkFileSystem(self):
+        with open("backup_data/folders.txt") as locationsFile:
+            content = locationsFile.read()
+        
+        if content == "":
+            raise NoBackupLocationsSpecified("\n\nPlease specifiy folders in backup_data/folders.txt to backup. For more information, read the README.\n\n")
     
     def openBackupLocationsFile(self):
         '''Used in various properties to get the listed folders to backup.'''
         with open("backup_data/folders.txt") as locationsFile:
-            if locationsFile.read() == "":
-                content = ""
-            else:
-                content = locationsFile.readlines()
-        
-        if content == "":
-            raise NoBackupLocationsSpecified("\n\nPlease specifiy folders in backup_data/folders.txt to backup. For more information, read the README.\n\n")
+            content = locationsFile.readlines()
 
         return content
 
@@ -76,30 +84,31 @@ class Backup:
 
         
     def createBackupFolder(self):
-        '''Create a folder named "D6-Backup" in the user's home folder.'''
+        '''Create the backup folder in the user's home folder.'''
         try:
-            os.mkdir(self.homeFolder + "D6-Backup")
+            os.mkdir(self.backupFolder)
         except FileExistsError:
-            print("The 'D6-Backup' folder exists. Please delete it and re-run the program.")
+            print("The backup folder '{}' exists. Please delete it and re-run the program.".format(self.backupFolderName))
             sys.exit()
     
     def moveLocationsToBackupFolder(self):
-        '''Move all the zipped folders to D6-Backup, the main backup folder.'''
+        '''Move all the zipped folders to self.backupFolderName, the main backup folder.'''
         for zippedFile in self.zippedFiles:
             print("Moving {}...".format(zippedFile))
-            shutil.move(self.homeFolder + zippedFile, self.homeFolder + "D6-Backup/")
-            print("Moved {} to {}...".format(zippedFile, self.homeFolder + "D6-Backup/"))
+            backupLocation = self.backupFolder
+            shutil.move(self.homeFolder + zippedFile, backupLocation)
+            print("Moved {} to {}...".format(zippedFile, backupLocation))
         
     def zipBackupFolder(self):
-        '''Zip the D6-Backup folder for easy transport.'''
-        print("Zipping D6-Backup...")
-        shutil.make_archive(self.homeFolder + "D6-Backup/", "zip", self.homeFolder + "D6-Backup/")
-        print("Zipped D6-Backup.")
+        '''Zip the backup folder for easy transport.'''
+        print("Zipping {}...".format(self.backupFolderName))
+        shutil.make_archive(self.backupFolder, "zip", self.backupFolder)
+        print("Zipped {}.".format(self.backupFolderName))
     
     def removeUnzippedBackupFolder(self):
-        '''When zipping a folder, the original folder stays, so we remove D6-Backup after it has been zipped.'''
+        '''When zipping a folder, the original folder stays, so we remove the backup folder after it has been zipped.'''
         print("Removing unzipped backup folder...")
-        shutil.rmtree(self.homeFolder + "D6-Backup/")
+        shutil.rmtree(self.backupFolder)
         print("Removed unzipped backup folder.")
     
     def moveZippedBackupFolder(self):
@@ -111,13 +120,14 @@ class Backup:
         
 
         if confirm == "y":
-            shutil.move(self.homeFolder + "D6-Backup.zip", self.moveToLocation)
-            os.rename(self.moveToLocation + "D6-Backup.zip", self.moveToLocation + self.date + "-D6-Backup.zip")
+            shutil.move(self.backupFolder + ".zip", self.moveToLocation)
+            os.rename(self.moveToLocation + self.backupFolderName + ".zip", self.moveToLocation + self.date + "-" + self.backupFolderName + ".zip")
         
         print("\n\nBackup Completed!\n\n")
 
     def __call__(self):
         '''Run all methods'''
+        self.checkFileSystem()
         self.zipLocations()
         self.createBackupFolder()
         self.moveLocationsToBackupFolder()
@@ -128,5 +138,5 @@ class Backup:
 
 
 if __name__ == '__main__':
-    bk = Backup()
+    bk = Backup("D6-Backup")
     bk()
