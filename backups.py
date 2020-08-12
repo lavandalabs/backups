@@ -138,10 +138,7 @@ class Backup:
 def setCustomMoveToLocation():
     '''If you want to customize the moveTo location, which
     will override the prompt, return an absolute path here'''
-    if os.path.exists("/media/titanium/Shark/"):
-        return "/media/titanium/Shark/"
-    else:
-        return "/home/titanium/Local-Backups/"
+    pass
 
 
 if __name__ == '__main__':
